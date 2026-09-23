@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\Expense;
 use Illuminate\Http\Request;
 use Inertia\Inertia; 
+use Inertia\Response;
 
 class ExpenseController extends Controller
 {
@@ -14,18 +15,19 @@ class ExpenseController extends Controller
     public function index()
     {
         //
-        $expenses = Expense::expenses();
+        $expenses = Expense::all();
+
         return Inertia::render('Expenses/Index', [
-        'expenses' => $expenses,
+            'expenses' => $expenses,
         ]);
     }
 
     /**
      * Show the form for creating a new resource.
      */
-    public function create()
+    public function create(): Response
     {
-        //
+        return Inertia::render('Expenses/Create');
     }
 
     /**
@@ -33,7 +35,17 @@ class ExpenseController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'amount' => 'required|numeric',
+        'category' => 'required|string',
+        'date' => 'required|date',
+        'notes' => 'nullable|string',
+        ]);
+
+        Expense::create($validated);
+
+        return redirect()->route('expenses.index');
     }
 
     /**
@@ -42,14 +54,17 @@ class ExpenseController extends Controller
     public function show(Expense $expense)
     {
         //
+        Route::resource('expenses', ExpenseController::class)->except(['show']);
     }
 
     /**
      * Show the form for editing the specified resource.
      */
-    public function edit(Expense $expense)
+    public function edit(Expense $expense): Response
     {
-        //
+        return Inertia::render('Expenses/Edit', [
+            'expense' => $expense
+        ]);
     }
 
     /**
@@ -57,7 +72,20 @@ class ExpenseController extends Controller
      */
     public function update(Request $request, Expense $expense)
     {
-        //
+    
+        $validated = $request->validate([
+        'title' => 'required|string|max:255',
+        'amount' => 'required|numeric',
+        'category' => 'required|string',
+        'date' => 'required|date',
+        'notes' => 'nullable|string',
+        ]);
+
+        $expense->update($validated);
+
+        return redirect()->route('expenses.index')
+            ->with('success', 'Expenses updated successfully!');
+
     }
 
     /**
@@ -65,6 +93,9 @@ class ExpenseController extends Controller
      */
     public function destroy(Expense $expense)
     {
-        //
+        $expense->delete();
+
+        return redirect()-> route('expenses.index')
+            ->with('message', 'Expense deleted successfully!');
     }
 }
