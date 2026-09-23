@@ -1,25 +1,38 @@
 import { Head, useForm, Link } from '@inertiajs/react';
 import { FormEventHandler } from 'react';
 
-export default function Create() {
-    const { data, setData, post, processing, errors } = useForm({
-        title: '',
-        amount: '',
-        category: '',
-        date: '',
-        notes: '',
+interface Expense {
+    id: number;
+    title: string;
+    amount: string;
+    category: string;
+    date: string;
+    notes: string | null;
+}
+
+interface Props {
+    expense: Expense;
+}
+
+export default function Edit({ expense }: Props) {
+    const { data, setData, put, processing, errors } = useForm({
+        title: expense.title,
+        amount: expense.amount,
+        category: expense.category,
+        date: expense.date,
+        notes: expense.notes ?? '',
     });
 
     const submit: FormEventHandler = (e) => {
         e.preventDefault();
-        post('/expenses');
+        put(`/expenses/${expense.id}`);
     };
 
     return (
         <div>
-            <Head title="Add Expense" />
+            <Head title="Edit Expense" />
 
-            <h1>Add Expense</h1>
+            <h1>Edit Expense</h1>
 
             <form onSubmit={submit}>
                 <div>
@@ -78,7 +91,7 @@ export default function Create() {
                 </div>
 
                 <button type="submit" disabled={processing}>
-                    {processing ? 'Saving...' : 'Save Expense'}
+                    {processing ? 'Saving...' : 'Update Expense'}
                 </button>
             </form>
 
