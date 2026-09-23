@@ -49,15 +49,6 @@ class ExpenseController extends Controller
     }
 
     /**
-     * Display the specified resource.
-     */
-    public function show(Expense $expense)
-    {
-        //
-        Route::resource('expenses', ExpenseController::class)->except(['show']);
-    }
-
-    /**
      * Show the form for editing the specified resource.
      */
     public function edit(Expense $expense): Response

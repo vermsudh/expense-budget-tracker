@@ -9,6 +9,8 @@ Route::middleware(['auth', 'verified'])->group(function () {
     Route::inertia('dashboard', 'dashboard')->name('dashboard');
 
     Route::resource('expenses', ExpenseController::class);
+
+     Route::resource('expenses', ExpenseController::class)->except(['show']);
 });
 
 require __DIR__.'/settings.php';
